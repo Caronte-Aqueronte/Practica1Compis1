@@ -1,0 +1,234 @@
+//seccion del codigo de usuario
+
+
+parser code {:
+	public ArrayList<ErrorDeEntrada> errores = new ArrayList<>();	//listado de errores que posiblemente hayan
+	public ArrayList<Double> ejeY = new ArrayList<>();	//listados de los ejeY de la grafica que se este evaluando
+	public ArrayList<String> ejeX = new ArrayList<>();	//listado de los ejeX de la grafica que se esta evaluando actualmente
+	public ArrayList<Grafica> graficas = new ArrayList<>();	//listado de las graficas que han sido aceptadas
+	public ArrayList<Unir> uniones = new ArrayList<>();	//listado de las uniones de la grafica que se este evaluando
+	public ArrayList<String> etiquetas = new ArrayList<>();	//etiquetas que iran a la grafica de pie
+	public ArrayList<String> ejecutar = new ArrayList<>();	//listado de los titulos de las graficas que se ejecutaran
+	public ArrayList<Double> valores = new ArrayList<>();	//valores de la grafica
+	public ArrayList<OcurrenciaMatematica> ocurrencias = new ArrayList<>();	//listado de todas las operaciones matematicas que ppueden haber
+	public String titulo = "";	//titulo del agrafica
+	public String tipo = "";	//tipo de la grafica de pie
+	public double total = 0.0;	//total de la grafica de pie
+	public String extra = "";	//extra de la grafica de pie
+	public int totalPie = 0;	//contador que llevara la cantidad de graficas de pie
+	public int totalBarra = 0;	//contador que llevara la cantidad de graficas de barras
+
+	//constructor de la clase que acepta un lexer
+   	public ParserPrimeraPractica(Analizador analizador){
+        super(analizador);
+    }
+
+	public void guardarEjeY(String[] valoresEjeY){	
+		for(int x = 0; x < valoresEjeY.length; x++){
+			double valorEjeY = Double.parseDouble(valoresEjeY[x]);
+			ejeY.add(valorEjeY);			
+		}
+	}
+
+	public void guardarEjeX(String[] valoresEjeX){
+		for(int x = 0; x < valoresEjeX.length; x++){
+			String valorEjeX = valoresEjeX[x].toString();
+			ejeX.add(valorEjeX);			
+		}
+	}
+
+
+	public void guardarEtiquetas(String[] etiquetas1){
+		for(int x = 0; x < etiquetas1.length; x++){
+			String etiqueta = etiquetas1[x].toString();
+			etiquetas.add(etiqueta);			
+		}
+	}
+
+	public void guardarValores(String[] valores1){	
+		for(int x = 0; x < valores1.length; x++){
+			double valor = Double.parseDouble(valores1[x]);
+			valores.add(valor);			
+		}
+	}
+
+	public void crearGraficaBarras(){		
+		GraficaBarra graficaBarra = new GraficaBarra(new ArrayList<String>(ejeX),
+		new ArrayList<Double>(ejeY), new String(titulo), new ArrayList<Unir>(uniones));
+		graficas.add(graficaBarra);	
+		totalBarra++;
+		formatearTodo();
+	}
+
+	public void crearGraficaPie(){		
+		GraficaPie graficaPie = new GraficaPie(new String(titulo), new ArrayList<>(uniones),
+		new ArrayList<String>(etiquetas),new ArrayList<Double>(valores), new String(tipo),
+		total, new String(extra));
+		graficas.add(graficaPie);
+		totalPie++;
+		formatearTodo();
+	}
+
+	public void formatearTodo(){
+		//volvemos todos los ints a 0 todos los string a vacio y limpiamos todos los arrays
+		ejeY.clear();	
+ 		ejeX.clear();
+		uniones.clear();
+		etiquetas.clear();
+		valores.clear();
+	 	titulo = "";
+	 	tipo = "";
+	 	total = 0.0;
+	 	extra = "";
+	}
+
+	public void report_fatal_error(String message, Object info) {
+        System.out.println("public void report_fatal_error");
+    }
+
+    public void syntax_error(Symbol cur_token) {
+		String listadoDeTokensEsperados = "";
+        List tokensEsperados = expected_token_ids();//mandamos a traer los tokens esperados
+        for (int x = 0; x < tokensEsperados.size(); x++) {//iteramos dentro de los tokens esperados
+            int valorEsperado = (Integer) tokensEsperados.get(x);//traemos el valor int que representa al token esperado segun la iteracion
+            if (x == tokensEsperados.size() - 1) {//si estamos en la ultima posicion entonces no ponemos la coma al final
+                listadoDeTokensEsperados += sym.terminalNames[valorEsperado] + ".";
+            } else {
+                listadoDeTokensEsperados += sym.terminalNames[valorEsperado] + " o ";//agregamos el nombre del token al listado mas una coma
+            }
+        }
+        errores.add(new ErrorDeEntrada(cur_token.value.toString(), cur_token.left, cur_token.right, "Sintactico", "Se esperaba " + listadoDeTokensEsperados));
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+        if (cur_token.sym == sym.EOF) {
+            System.out.println("public void unrecoveredsyntax_error");
+        }
+    }
+:};
+
+
+//
+
+//daclarar los temrinales
+
+terminal DEF, BARRAS, PIE, TITULO, EJEX, EJEY, ETIQUETA, VALORES, UNIR, TIPO, TOTAL, EXTRA, CANTIDAD, PORCENTAJE, MAS, MENOS, POR, DIAGONAL, PARENTESISIZQUIERDO, EJECUTAR, PARENTESISDERECHO, PUNTOYCOMA, COMA, CORCHETEIZQUIERDO, CORCHETEDERECHO, LLAVEIZQUIERDA, LLAVEDERECHA, DOSPUNTOS, PALABRA;
+terminal Double ENTERO, DECIMAL;
+//declarar no terminales
+
+non terminal e, g, h, x, expresionbarras, coma, expresionpie, tipodegrafica, d, f, items, valores, llaves, tipo, total, operacion;
+
+//gramatica
+
+e ::= d DEF tipodegrafica f {:  :}
+	| error EJECUTAR {:formatearTodo();:}
+	;
+tipodegrafica ::= BARRAS LLAVEIZQUIERDA expresionbarras {:crearGraficaBarras();:}
+	|  PIE LLAVEIZQUIERDA expresionpie {:crearGraficaPie();:}
+	| error LLAVEDERECHA {:formatearTodo();:}
+	;
+d ::=  d DEF tipodegrafica {::}
+	| 
+	| error DEF {:formatearTodo();:}
+	;
+f ::= f EJECUTAR PARENTESISIZQUIERDO PALABRA:e1 PARENTESISDERECHO PUNTOYCOMA  {: ejecutar.add(e1.toString().replaceAll("\"", "")); :}
+	| EJECUTAR PARENTESISIZQUIERDO PALABRA:e1 PARENTESISDERECHO PUNTOYCOMA {:ejecutar.add(e1.toString().replaceAll("\"", ""));:}
+	| error EJECUTAR {::}
+	;
+expresionbarras ::= TITULO DOSPUNTOS PALABRA:tituloString PUNTOYCOMA expresionbarras  {: titulo = tituloString.toString().replaceAll("\"", ""); :}
+	| EJEX DOSPUNTOS CORCHETEIZQUIERDO items:e1 CORCHETEDERECHO PUNTOYCOMA expresionbarras  {: 
+		String[] valores = e1.toString().replaceAll("\"", "").split(",");//obtenemos el array con todos las etiquetas que representan al eje X
+		guardarEjeX(valores);//mandamos a guardar el ejeX
+	:}
+	| EJEY DOSPUNTOS CORCHETEIZQUIERDO valores:e1 PUNTOYCOMA expresionbarras  {: 
+		String[] valores = e1.toString().split(",");//obtenemos el array con todos los numeros que representan al ejeY
+		guardarEjeY(valores);//mandamos a guardar el ejeY
+	:}
+	| UNIR DOSPUNTOS CORCHETEIZQUIERDO llaves CORCHETEDERECHO PUNTOYCOMA expresionbarras  {::}
+	| LLAVEDERECHA {::}
+	| error DEF {:formatearTodo();:}
+	;
+items ::= PALABRA:e1  {: RESULT = e1; :}
+	| PALABRA:e1 COMA items:e2  {: RESULT = e1+","+e2; :}
+	| error DEF {:formatearTodo();:}
+	; 
+valores ::= operacion:e1 coma:e2 {: if(e2.toString().equals("-1")){
+						RESULT = e1 +"";					
+					}else{
+						RESULT = e1 +","+e2;
+					}	
+	 :}
+	 | error DEF {:formatearTodo();:}
+	;
+coma ::=   COMA operacion:e1 coma:e2 {: if(e2.toString().equals("-1")){
+						RESULT = e1 +"";					
+					}else{
+						RESULT = e1 +","+e2;
+					} :}
+	| CORCHETEDERECHO  {: RESULT = "-1"; :}
+	| error DEF {:formatearTodo();:}
+	;
+operacion ::= g:e1 {: RESULT = e1; :}
+	;
+g ::= g:e1 MAS h:e2 {: ocurrencias.add(new OcurrenciaMatematica("Suma", cur_token.left, cur_token.right, e1 +"+"+e2)); RESULT =  (double) e1 +  (double) e2; :}
+	| g:e1 MENOS h:e2 {: ocurrencias.add(new OcurrenciaMatematica("Resta", cur_token.left, cur_token.right, e1 +"-"+e2)); RESULT =  (double) e1 - (double) e2; :}
+	| h:e1 {: RESULT = e1; :}
+	;
+h ::= h:e1 POR x:e2 {: ocurrencias.add(new OcurrenciaMatematica("Multiplicación", cur_token.left, cur_token.right, e1 +"*"+e2)); RESULT = (double) e1 * (double) e2; :}
+	| h:e1 DIAGONAL x:e2 {: ocurrencias.add(new OcurrenciaMatematica("División", cur_token.left, cur_token.right, e1 +"/"+e2)); RESULT = (double) e1 / (double) e2; :}
+	| x:e1 {: RESULT = e1; :}
+	;
+x ::= PARENTESISIZQUIERDO g:e1 PARENTESISDERECHO {: RESULT = e1; :}
+	| ENTERO:e1 {: RESULT = e1; :}
+	| DECIMAL:e2 {: RESULT = e2; :}
+	;
+llaves ::= LLAVEIZQUIERDA operacion:e1 COMA operacion:e2 LLAVEDERECHA {: 
+
+	Unir unir = new Unir((int) Double.parseDouble(e1.toString()), (int) Double.parseDouble(e2.toString()));//creamos el objeto unir
+	uniones.add(unir);//agregar el objeto unir al arrayList de unir 
+
+	:}
+	|  LLAVEIZQUIERDA operacion:e1 COMA operacion:e2 LLAVEDERECHA COMA llaves  {: 
+	Unir unir = new Unir((int) Double.parseDouble(e1.toString()), (int) Double.parseDouble(e2.toString()));//creamos el objeto unir
+	uniones.add(unir);//agregar el objeto unir al arrayList de unir 
+
+	:}
+	| error DEF {:formatearTodo();:}
+	;
+expresionpie ::= TITULO DOSPUNTOS PALABRA:tituloString PUNTOYCOMA expresionpie  {: titulo = tituloString.toString().replaceAll("\"", ""); :}
+	| UNIR DOSPUNTOS CORCHETEIZQUIERDO llaves CORCHETEDERECHO PUNTOYCOMA expresionpie {::}
+	| ETIQUETA DOSPUNTOS CORCHETEIZQUIERDO items:e1 CORCHETEDERECHO PUNTOYCOMA expresionpie {:
+
+		String[] etiquetas = e1.toString().replaceAll("\"", "").split(",");//obtenemos el array con todos las etiquetas del pie
+		guardarEtiquetas(etiquetas);//mandamos a guardar las etiquetas 
+	
+	:}
+	| VALORES DOSPUNTOS CORCHETEIZQUIERDO valores:e1 PUNTOYCOMA expresionpie {: 
+
+		String[] valores = e1.toString().split(",");//obtenemos el array con todos los numeros que van dentro del pie
+		guardarValores(valores);//mandamos a guardar los valores del pie
+	:}
+
+	| TIPO DOSPUNTOS tipo:e1 PUNTOYCOMA  expresionpie {:
+		if(e1.toString().equals("Cantidad")){
+			tipo = "Cantidad";	
+		}else{
+			tipo = "Porcentaje";
+		}
+	:}
+	| TOTAL DOSPUNTOS total:e1 PUNTOYCOMA expresionpie {: 
+		total = Double.parseDouble(e1.toString());	
+	:}
+	| EXTRA DOSPUNTOS PALABRA:e1 PUNTOYCOMA expresionpie {:
+		extra = e1.toString().replaceAll("\"", "");
+	:}
+	| LLAVEDERECHA {::}
+	| error DEF {:formatearTodo();:}
+	; 
+tipo ::= CANTIDAD {: RESULT = "Cantidad"; :}
+	| PORCENTAJE {: RESULT = "Porcentaje"; :}
+	| error DEF {:formatearTodo();:}
+	;
+total ::= operacion:e1 {: RESULT = e1; :}
+	| error DEF {:formatearTodo();:}
+	;

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/principal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/pantalla"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txtEntrada"
+                android:layout_width="match_parent"
+                android:layout_height="227dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Escribe tu codigo aqui."
+                android:inputType="textMultiLine"
+                android:phoneNumber="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Button
+                android:id="@+id/btnCompilar"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="1dp"
+                android:text="Compilar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/pantalla2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/txtReporteErrores"
+                android:layout_width="match_parent"
+                android:layout_height="227dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Errores"
+                android:inputType="textMultiLine"
+                android:phoneNumber="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+            <EditText
+                android:id="@+id/txtReporteGraficosDefinidos"
+                android:layout_width="match_parent"
+                android:layout_height="227dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Graficas definidas"
+                android:inputType="textMultiLine"
+                android:phoneNumber="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+            <EditText
+                android:id="@+id/txtReporteOcurrenciasMatematicas"
+                android:layout_width="match_parent"
+                android:layout_height="227dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Ocurrencias matematicas"
+                android:inputType="textMultiLine"
+                android:phoneNumber="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
